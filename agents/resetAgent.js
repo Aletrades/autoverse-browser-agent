@@ -1,7 +1,8 @@
 import { Stagehand } from '@browserbasehq/stagehand';
-import { z } from 'zod';
 
-// Resets a blown TopstepX account and returns the new API key
+// Resets a blown TopstepX account via browser
+// API key stays the same — only account ID changes after reset
+// n8n fetches the new account ID via API after this returns
 export async function resetAccountAgent() {
   const stagehand = new Stagehand({
     env: 'BROWSERBASE',
@@ -34,32 +35,8 @@ export async function resetAccountAgent() {
     await stagehand.act({ action: 'Click the Confirm or Yes button to confirm the reset' });
     await page.waitForTimeout(6000); // wait for reset to complete server-side
 
-    // ── Step 3: Generate a new API key ──────────────────────────────────────
-    console.log('[resetAgent] Generating new API key...');
-    await page.goto('https://app.topstepx.com/account/api-keys', { waitUntil: 'networkidle' });
-    await page.waitForTimeout(2000);
-
-    await stagehand.act({ action: 'Click the Generate API Key or Create New API Key button' });
-    await page.waitForTimeout(3000);
-
-    const { apiKey } = await stagehand.extract({
-      instruction: 'Extract the API key that was just generated — it is a long alphanumeric string, possibly base64',
-      schema: z.object({
-        apiKey: z.string().min(10),
-      }),
-    });
-
-    // ── Step 4: Get the new account ID ──────────────────────────────────────
-    console.log('[resetAgent] Fetching new account ID...');
-    const { accountId } = await stagehand.extract({
-      instruction: 'Extract the account ID or account number shown on the page — it is a numeric string like 20689959',
-      schema: z.object({
-        accountId: z.string(),
-      }),
-    });
-
-    console.log('[resetAgent] Done. New API key and account ID retrieved.');
-    return { apiKey, accountId };
+    console.log('[resetAgent] Reset complete.');
+    return { reset: true };
 
   } finally {
     await stagehand.close();
