@@ -12,7 +12,7 @@ export async function buyAccountAgent() {
     modelApiKey: process.env.OPENAI_API_KEY,
     verbose: 1,
     browserbaseSessionCreateParams: {
-      proxies: true, // residential proxy — bypasses IP block
+      proxies: [{ type: 'browserbase' }], // residential proxy — bypasses IP block
     },
   });
 
@@ -22,7 +22,8 @@ export async function buyAccountAgent() {
 
     // ── Step 1: Log in to Topstep.com ───────────────────────────────────────
     console.log('[buyerAgent] Logging into Topstep.com...');
-    await page.goto('https://www.topstep.com/login', { waitUntil: 'networkidle' });
+    await page.goto('https://www.topstep.com/login', { waitUntil: 'load', timeout: 30000 });
+    await page.waitForTimeout(2000);
     await stagehand.act({ action: 'Click the email input field' });
     await page.keyboard.type(process.env.TOPSTEPX_USERNAME);
     await stagehand.act({ action: 'Click the password field' });

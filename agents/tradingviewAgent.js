@@ -13,7 +13,7 @@ export async function setupTradingViewAgent({ webhookUrl, strategy = 'eval' }) {
     modelApiKey: process.env.OPENAI_API_KEY,
     verbose: 1,
     browserbaseSessionCreateParams: {
-      proxies: true, // residential proxy — bypasses IP block
+      proxies: [{ type: 'browserbase' }], // residential proxy — bypasses IP block
     },
   });
 
@@ -28,7 +28,8 @@ export async function setupTradingViewAgent({ webhookUrl, strategy = 'eval' }) {
 
     // ── Step 1: Log in to TradingView ───────────────────────────────────────
     console.log('[tradingviewAgent] Logging into TradingView...');
-    await page.goto('https://www.tradingview.com/accounts/signin/', { waitUntil: 'networkidle' });
+    await page.goto('https://www.tradingview.com/accounts/signin/', { waitUntil: 'load', timeout: 30000 });
+    await page.waitForTimeout(2000);
     await stagehand.act({ action: 'Click the Email option to sign in with email' });
     await page.waitForTimeout(1000);
     await stagehand.act({ action: 'Click the email input field and type the email address' });

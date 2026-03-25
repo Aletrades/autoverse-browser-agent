@@ -12,7 +12,7 @@ export async function resetAccountAgent() {
     modelApiKey: process.env.OPENAI_API_KEY,
     verbose: 1,
     browserbaseSessionCreateParams: {
-      proxies: true, // residential proxy — bypasses TopstepX datacenter IP block
+      proxies: [{ type: 'browserbase' }], // residential proxy — bypasses TopstepX datacenter IP block
     },
   });
 
@@ -22,7 +22,8 @@ export async function resetAccountAgent() {
 
     // ── Step 1: Log in ──────────────────────────────────────────────────────
     console.log('[resetAgent] Navigating to TopstepX login...');
-    await page.goto('https://app.topstepx.com/login', { waitUntil: 'networkidle' });
+    await page.goto('https://app.topstepx.com/login', { waitUntil: 'load', timeout: 30000 });
+    await page.waitForTimeout(2000);
 
     await stagehand.act({ action: 'Click the email or username input field' });
     await page.keyboard.type(process.env.TOPSTEPX_USERNAME);
