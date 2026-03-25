@@ -11,6 +11,9 @@ export async function buyAccountAgent() {
     modelName: 'gpt-4o',
     modelApiKey: process.env.OPENAI_API_KEY,
     verbose: 1,
+    browserbaseSessionCreateParams: {
+      proxies: true, // residential proxy — bypasses IP block
+    },
   });
 
   try {

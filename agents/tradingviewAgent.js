@@ -12,6 +12,9 @@ export async function setupTradingViewAgent({ webhookUrl, strategy = 'eval' }) {
     modelName: 'gpt-4o',
     modelApiKey: process.env.OPENAI_API_KEY,
     verbose: 1,
+    browserbaseSessionCreateParams: {
+      proxies: true, // residential proxy — bypasses IP block
+    },
   });
 
   const strategyName = strategy === 'funded' ? 'NQ RSI Funded' : 'NQ RSI Eval Passer';
